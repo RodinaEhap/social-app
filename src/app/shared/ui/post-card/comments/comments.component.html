@@ -1,0 +1,139 @@
+<div class="mt-4 pt-4 border-t border-white/5 space-y-4">
+  <div class="flex items-center gap-3 glass-effect p-2 rounded-2xl">
+    <input
+      [(ngModel)]="commentContent"
+      (keydown.enter)="sendComment()"
+      placeholder="Write a vibe..."
+      class="flex-1 bg-transparent border-none outline-none text-sm px-2 text-main"
+    />
+    <button
+      (click)="sendComment()"
+      class="w-10 h-10 rounded-xl bg-brand-primary text-white flex items-center justify-center hover:opacity-90 disabled:opacity-30 transition-all"
+    >
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+  </div>
+
+  <div class="space-y-6">
+    @for (comment of comments; track comment._id) {
+      <div class="flex gap-3 animate-in fade-in slide-in-from-bottom-2">
+        <img
+          [src]="comment.commentCreator?.photo"
+          class="w-9 h-9 rounded-xl object-cover border border-white/10"
+        />
+
+        <div class="flex-1">
+          <div class="glass-effect rounded-2xl p-3 relative group">
+            <h5 class="text-[11px] font-black mb-1 uppercase text-brand-primary tracking-tighter">
+              {{ comment.commentCreator?.name }}
+            </h5>
+
+            @if (editingCommentId === comment._id) {
+              <div class="space-y-2 mt-2">
+                <input
+                  [(ngModel)]="editContent"
+                  (keydown.enter)="saveUpdate(comment)"
+                  class="w-full bg-white/5 border border-brand-primary/30 rounded-lg p-2 text-sm outline-none focus:border-brand-primary"
+                />
+                <div class="flex gap-2">
+                  <button
+                    (click)="saveUpdate(comment)"
+                    class="text-2xs font-bold bg-brand-primary text-white px-3 py-1.5 rounded-lg"
+                  >
+                    Update
+                  </button>
+                  <button
+                    (click)="cancelEdit()"
+                    class="text-2xs font-bold bg-white/5 px-3 py-1.5 rounded-lg opacity-60"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <p class="text-sm leading-snug opacity-90">{{ comment.content }}</p>
+            }
+            <div
+              class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            >
+              <button (click)="startEdit(comment)" class="text-brand-primary hover:scale-110">
+                <i class="fa-solid fa-pen-to-square text-2xs"></i>
+              </button>
+              <button (click)="deleteComment(comment._id)" class="text-red-500 hover:scale-110">
+                <i class="fa-solid fa-trash-can text-2xs"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center gap-5 mt-2 ml-2">
+            <button
+              (click)="toggleLike(comment)"
+              class="text-2xs font-black uppercase flex items-center gap-1.5 transition-all active:scale-125"
+              [class.text-red-500]="comment.isLiked"
+            >
+              <i
+                class="fa-heart"
+                [class.fa-solid]="comment.isLiked || comment.likesCount > 0"
+                [class.fa-regular]="!comment.isLiked"
+              >
+              </i>
+              {{
+                comment.likesCount !== undefined ? comment.likesCount : comment.likes?.length || 0
+              }}
+            </button>
+            <button
+              (click)="toggleReplyField(comment._id)"
+              class="text-2xs font-black uppercase opacity-60 hover:opacity-100 hover:text-brand-primary transition-all"
+            >
+              Reply
+            </button>
+            @if (comment.repliesCount > 0) {
+              <button
+                (click)="loadReplies(comment)"
+                class="text-2xs font-black uppercase text-brand-primary hover:underline underline-offset-4"
+              >
+                {{ comment.showReplies ? 'Hide' : 'View' }} ({{ comment.repliesCount }}) Replies
+              </button>
+            }
+          </div>
+
+          @if (expandedReplyId === comment._id) {
+            <div class="mt-3 ml-6 flex gap-2 animate-in slide-in-from-left-2">
+              <input
+                [(ngModel)]="replyContent"
+                (keydown.enter)="sendReply(comment._id)"
+                placeholder="Write a reply..."
+                class="flex-1 bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-xs outline-none focus:border-brand-primary"
+              />
+              <button
+                (click)="sendReply(comment._id)"
+                class="text-brand-primary px-2 transition-transform hover:scale-110"
+              >
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          }
+          @if (comment.showReplies && comment.replies?.length) {
+            <div class="ml-8 mt-4 space-y-4 border-l border-white/5 pl-4">
+              @for (reply of comment.replies; track reply._id) {
+                <div class="flex gap-3 items-start animate-in fade-in duration-300">
+                  <img
+                    [src]="reply.commentCreator?.photo"
+                    class="w-7 h-7 rounded-lg object-cover border border-white/5"
+                  />
+                  <div class="flex-1 glass-effect rounded-xl p-2.5">
+                    <h6
+                      class="text-2xs font-black text-brand-primary uppercase tracking-tighter mb-0.5"
+                    >
+                      {{ reply.commentCreator?.name }}
+                    </h6>
+                    <p class="text-xs opacity-80 leading-snug">{{ reply.content }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

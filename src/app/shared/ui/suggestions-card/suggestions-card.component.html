@@ -1,0 +1,25 @@
+<div class="pe-5">
+  <div class="space-y-5">
+    @for (user of users; track user._id) {
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3" (click)="goToProfile(user._id)">
+          <img [src]="user.photo" class="w-9 h-9 rounded-xl object-cover border border-white/10" />
+          <div class="flex flex-col">
+            <h4 class="text-[12px] font-bold leading-none mb-1" style="color: var(--text-main)">
+              {{ user.name?.split(' ').slice(0, 3).join(' ') }}
+            </h4>
+            <p class="text-2xs opacity-50" style="color: var(--text-muted)">
+              @{{ user.name.split(' ')[0] | lowercase }}
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="handleFollow(user._id, user)"
+          class="text-2xs font-bold px-3 py-1.5 rounded-md bg-brand-primary text-white hover:opacity-90 transition-all"
+        >
+          {{ user.isFollowed ? 'Following' : 'Follow' }}
+        </button>
+      </div>
+    }
+  </div>
+</div>

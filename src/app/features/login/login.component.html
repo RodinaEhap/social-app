@@ -1,0 +1,128 @@
+<div class="min-h-screen flex items-center justify-center relative overflow-hidden p-6">
+  <div
+    class="absolute top-0 -left-10 w-125 h-125 bg-brand-primary/15 rounded-full blur-[120px] animate-blob"
+  ></div>
+  <div
+    class="absolute bottom-0 -right-10 w-125 h-125 bg-indigo-500/15 rounded-full blur-[120px] animate-blob animation-delay-2000"
+  ></div>
+
+  <div class="relative z-10 w-full max-w-110">
+    <div
+      class="glass-effect border border-white/60 rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-3xl bg-white/70"
+    >
+      <div class="text-center mb-8">
+        <h2
+          class="text-4xl font-[1000] bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text text-transparent mb-2 tracking-tight"
+        >
+          Welcome Back
+        </h2>
+        <p class="text-zinc-500 text-sm font-semibold tracking-wide">
+          Login to your
+          <span
+            class="text-[15px] bg-linear-to-r from-indigo-700 to-brand-primary bg-clip-text text-transparent tracking-tight font-black"
+            >Social Vibe</span
+          >
+          account
+        </p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="signInSubmit()" class="space-y-6">
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-envelope text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="email"
+              type="email"
+              id="email"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  loginForm.get('email')?.invalid && loginForm.get('email')?.touched,
+                'border-green-500':
+                  loginForm.get('email')?.valid && loginForm.get('email')?.touched,
+                'border-gray-300': !loginForm.get('email')?.touched,
+              }"
+            />
+            <label
+              for="email"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Email Address
+            </label>
+          </div>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">Please enter a valid email</div>
+          }
+        </div>
+
+        <div class="flex flex-col w-full">
+          @if (showForgot) {
+            <div class="flex justify-end px-2 animate-fade-in">
+              <a
+                routerLink="/auth/forget"
+                class="text-2xs font-bold text-zinc-500 tracking-widest uppercase hover:text-brand-primary transition-colors duration-300"
+              >
+                Forgot Password?
+              </a>
+            </div>
+          }
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-lock text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+
+            <input
+              (input)="startTimer()"
+              formControlName="password"
+              type="password"
+              id="password"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  loginForm.get('password')?.invalid && loginForm.get('password')?.touched,
+                'border-green-500':
+                  loginForm.get('password')?.valid && loginForm.get('password')?.touched,
+                'border-gray-300': !loginForm.get('password')?.touched,
+              }"
+            />
+            <label
+              for="password"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Password
+            </label>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">Password is required</div>
+          }
+        </div>
+
+        <button
+          [disabled]="loginForm.invalid"
+          class="w-full py-4 mt-2 rounded-xl font-black uppercase text-xs tracking-[0.25em] transition-all duration-300 bg-linear-to-r from-indigo-600 to-brand-primary text-white shadow-xl shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:scale-[1.01] active:scale-[0.99] disabled:from-zinc-400 disabled:to-zinc-500 disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-60 disabled:scale-100"
+        >
+          Login Now
+        </button>
+
+        <div class="text-center pt-2">
+          <p class="text-zinc-500 text-[11px] font-bold uppercase">
+            Don't have an account?
+            <a
+              routerLink="/auth/register"
+              class="text-brand-primary font-black hover:text-indigo-600 transition-colors ml-1 tracking-wider border-b-2 border-brand-primary/10"
+              >SIGN UP</a
+            >
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

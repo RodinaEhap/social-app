@@ -1,1 +1,121 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+@import 'flowbite/src/themes/default';
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+@import 'ngx-toastr/toastr';
+@utility container {
+  margin-inline: auto;
+}
+@theme {
+  --color-brand-primary: #0b048a;
+  --color-brand-dark: #070256;
+  --color-night-bg: #040d21;
+  --font: 'Inter', sans-serif;
+}
+:root {
+  --bg-body: #f8fafc;
+  --text-main: #08025f;
+  --text-muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --input-bg: rgba(255, 255, 255, 0.4);
+  --label-text: #fbfbfd;
+}
+
+.dark {
+  --bg-body: var(--color-night-bg);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --label-text: #0c1428;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(11, 4, 138, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.05) 0px, transparent 50%);
+}
+
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.nav-item {
+  @apply px-5 py-2.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-2.5;
+  color: var(--text-muted);
+}
+
+.nav-item:hover {
+  color: var(--color-brand-primary);
+  background: rgba(11, 4, 138, 0.05);
+}
+
+.active-link {
+  @apply bg-brand-primary text-white shadow-lg shadow-indigo-500/30;
+}
+
+label {
+  background-color: var(--label-text);
+}
+input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.5);
+  opacity: 0.6;
+}
+
+.dark input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.5;
+}
+.active-tab {
+  @apply bg-brand-primary dark:bg-brand-primary text-white shadow-sm;
+}
+
+.media-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.media-wrapper img {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
+}
+
+.media-wrapper video {
+  width: 100%;
+  max-height: 500px;
+  outline: none;
+}
+@keyframes drawVibe {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.draw-svg path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: drawVibe 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

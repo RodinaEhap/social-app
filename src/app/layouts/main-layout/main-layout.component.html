@@ -1,0 +1,318 @@
+<div class="min-h-screen bg-(--bg-main) transition-colors duration-500 pb-20 lg:pb-0">
+  <nav class="glass-effect sticky top-0 z-100 w-full">
+    <div class="max-w-375 mx-auto px-4 md:px-8 flex justify-between items-center h-16">
+      <div class="flex items-center gap-2 cursor-pointer shrink-0" routerLink="/main/feed">
+        <div class="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+          <div class="absolute inset-0 bg-brand-primary/10 blur-xl rounded-full"></div>
+          <div class="w-10 h-10" [routerLink]="['/main/feed']">
+            <svg class="w-full h-full draw-svg" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="vibeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color: #4b4ce4; stop-opacity: 1" />
+                  <stop offset="100%" style="stop-color: #0b048a; stop-opacity: 1" />
+                </linearGradient>
+              </defs>
+
+              <path
+                d="M30 35 C 30 20, 65 20, 65 35 C 65 50, 25 55, 25 70 C 25 85, 45 85, 52 78"
+                stroke="url(#vibeGradient)"
+                stroke-width="8"
+                stroke-linecap="round"
+                fill="none"
+              />
+
+              <path
+                d="M52 78 C 58 70, 62 65, 65 85 L 85 55"
+                stroke="url(#vibeGradient)"
+                stroke-width="8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-center tracking-tighter">
+          <span
+            class="text-base md:text-xl uppercase font-black bg-linear-to-r from-indigo-700 to-brand-primary bg-clip-text text-transparent"
+            >Social</span
+          >
+          <span
+            class="text-base md:text-xl font-black uppercase ml-1 bg-linear-to-r from-brand-primary to-brand-dark bg-clip-text text-transparent"
+            >Vibe</span
+          >
+        </div>
+      </div>
+
+      <div class="hidden lg:flex items-center p-1 rounded-2xl">
+        <a
+          routerLink="/main/feed"
+          routerLinkActive="active-tab"
+          class="px-6 py-2 rounded-xl text-sm font-black transition-all flex items-center gap-2 text-zinc-500 hover:text-brand-primary"
+        >
+          <i class="fa-solid fa-house-chimney"></i> Feed
+        </a>
+
+        <a
+          routerLink="/main/notification"
+          routerLinkActive="active-tab"
+          class="px-6 py-2 rounded-xl text-sm font-black transition-all flex items-center gap-2 text-zinc-500 hover:text-brand-primary"
+        >
+          <i class="fa-solid fa-bell"></i> Notifications
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          (click)="showCreateModal = true"
+          class="group hidden lg:flex px-6 py-2 rounded-4xl text-sm font-black hover:scale-105 active:scale-95 shadow-lg transition-all items-center gap-2 active-tab"
+        >
+          <i
+            class="fa-solid fa-plus transition-transform duration-300 ease-in-out group-hover:rotate-90"
+          ></i>
+          Create Vibe
+        </button>
+        <button
+          (click)="toggleTheme()"
+          class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-brand-primary transition-all active:scale-90"
+        >
+          <i class="fa-solid fa-circle-half-stroke text-lg"></i>
+        </button>
+
+        <div class="relative profile-trigger flex items-center gap-2 pl-3">
+          <div
+            routerLink="/main/profile"
+            class="w-9 h-9 rounded-full border-2 border-brand-primary p-0.5 cursor-pointer overflow-hidden hover:ring-4 ring-brand-primary/10 transition-all"
+          >
+            <img
+              [src]="userPhoto || 'https://i.pravatar.cc/100'"
+              class="rounded-full h-full w-full object-cover"
+            />
+          </div>
+          <div
+            (click)="toggleProfileMenu()"
+            class="p-1 cursor-pointer hover:bg-zinc-100 dark:hover:bg-white/5 rounded-full transition-all"
+          >
+            <i
+              class="fa-solid fa-chevron-down text-2xs text-zinc-400 transition-transform duration-300"
+              [class.rotate-180]="isProfileMenuOpen"
+            ></i>
+          </div>
+
+          @if (isProfileMenuOpen) {
+            <div
+              class="absolute top-[130%] -right-[20%] w-45 glass-effect rounded-2xl shadow-2xl py-2 z-200"
+            >
+              <a
+                routerLink="/main/profile"
+                (click)="isProfileMenuOpen = false"
+                class="flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-brand-primary/10 transition-all text-(--text-main)"
+                ><i class="fa-solid fa-user"></i> Profile</a
+              >
+              <a
+                routerLink="/main/change"
+                (click)="isProfileMenuOpen = false"
+                class="flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-brand-primary/10 transition-all text-(--text-main)"
+                ><i class="fa-solid fa-shield-halved"></i> Security</a
+              >
+              <button
+                (click)="logOut()"
+                class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-red-500 hover:bg-red-500/10 transition-all text-left uppercase"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <router-outlet></router-outlet>
+
+  @if (isMobileMenuOpen) {
+    <div class="lg:hidden fixed inset-0 z-150">
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        (click)="isMobileMenuOpen = false"
+      ></div>
+      <div
+        class="absolute bottom-17 glass-effect rounded-xl p-1 border border-white/10 right-4 left-4"
+      >
+        <div class="grid grid-cols-3 gap-2">
+          <a
+            [routerLink]="['/main/feed']"
+            [queryParams]="{ tab: 'saved' }"
+            (click)="isMobileMenuOpen = false"
+            class="flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-brand-primary/5 text-(--text-main)"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center"
+            >
+              <i class="fa-solid fa-bookmark"></i>
+            </div>
+            <span class="text-2xs font-bold uppercase">Saved</span>
+          </a>
+          <a
+            [routerLink]="['/main/feed']"
+            [queryParams]="{ tab: 'likes' }"
+            (click)="isMobileMenuOpen = false"
+            class="flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-brand-primary/5 text-(--text-main)"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-pink-500/20 text-pink-500 flex items-center justify-center"
+            >
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <span class="text-2xs font-bold uppercase">Likes</span>
+          </a>
+          <button
+            (click)="isSuggestionsOpen = true; isMobileMenuOpen = false"
+            class="flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-brand-primary/5 text-(--text-main)"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <span class="text-2xs font-bold uppercase">Friends</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <nav
+    class="lg:hidden fixed bottom-0 left-0 w-full glass-effect h-16 border-t border-white/10 flex justify-around items-center z-200 px-4 pb-1"
+  >
+    <a
+      routerLink="/main/feed"
+      routerLinkActive="text-brand-primary"
+      class="flex flex-col items-center gap-1 opacity-60 router-link-active:opacity-100"
+    >
+      <i class="fa-solid fa-house-chimney text-lg"></i>
+      <span class="text-[9px] font-bold uppercase">Feed</span>
+    </a>
+    <button
+      (click)="isMobileMenuOpen = !isMobileMenuOpen"
+      [class.text-brand-primary]="isMobileMenuOpen"
+      class="flex flex-col items-center gap-1 opacity-60"
+    >
+      <i class="fa-solid fa-shapes text-lg"></i>
+      <span class="text-[9px] font-bold uppercase">Explore</span>
+    </button>
+
+    <button (click)="showCreateModal = true" class="relative -top-4">
+      <div
+        class="w-12 h-12 bg-brand-primary rounded-2xl flex items-center justify-center shadow-lg shadow-brand-primary/40 rotate-45 active:scale-95 transition-all"
+      >
+        <i class="fa-solid fa-plus text-white text-xl -rotate-45 animate-pulse duration-500"></i>
+      </div>
+    </button>
+
+    <a
+      routerLink="/main/notification"
+      routerLinkActive="text-brand-primary"
+      class="flex flex-col items-center gap-1 opacity-60 router-link-active:opacity-100"
+    >
+      <i class="fa-solid fa-bell text-lg"></i>
+      <span class="text-[9px] font-bold uppercase">Notifications</span>
+    </a>
+    <a
+      routerLink="/main/profile"
+      routerLinkActive="text-brand-primary"
+      class="flex flex-col items-center gap-1 opacity-60 router-link-active:opacity-100"
+    >
+      <i class="fa-solid fa-user-circle text-lg"></i>
+      <span class="text-[9px] font-bold uppercase">Me</span>
+    </a>
+  </nav>
+</div>
+
+@if (showCreateModal) {
+  <div
+    class="fixed inset-0 z-600 flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-md bg-white/10"
+  >
+    <div
+      class="w-full max-w-lg border-t md:border border-white/10 rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl duration-300"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-black uppercase">Share Vibe</h2>
+        <button (click)="showCreateModal = false" class="text-zinc-500 hover:text-red-700">
+          <i class="fa-solid fa-circle-xmark text-2xl"></i>
+        </button>
+      </div>
+
+      <textarea
+        [(ngModel)]="postContent"
+        class="w-full rounded-2xl p-4 bg-brand-primary/10 mb-4 resize-none"
+        rows="10"
+        placeholder="What's on your mind?"
+      ></textarea>
+
+      @if (previewUrl) {
+        <div
+          class="relative mb-4 rounded-2xl overflow-hidden aspect-video flex items-center justify-center"
+        >
+          @if (mediaType === 'image') {
+            <img [src]="previewUrl" class="max-h-full w-full object-contain" />
+          } @else {
+            <video [src]="previewUrl" controls class="max-h-full w-full"></video>
+          }
+          <button
+            (click)="previewUrl = null; selectedFile = null"
+            class="group absolute top-2 right-2 bg-red-500 p-2 rounded-full transition-all"
+          >
+            <i class="fa-solid fa-trash-can hover:rotate-9 text-white"></i>
+          </button>
+        </div>
+      }
+
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex gap-4">
+          <label class="cursor-pointer group">
+            <input
+              type="file"
+              class="hidden"
+              (change)="onFileSelected($event)"
+              accept="image/*,video/*"
+            />
+            <div class="flex items-center gap-2 text-2xs">
+              <i class="fa-solid fa-upload text-xl"></i>
+              <span class="text-xl font-bold">choose file...</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button
+        (click)="handleCreatePost()"
+        class="w-full py-3 bg-brand-primary text-white rounded-2xl font-black shadow-lg shadow-brand-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
+      >
+        POST VIBE
+      </button>
+    </div>
+  </div>
+}
+
+@if (isSuggestionsOpen) {
+  <div class="fixed inset-0 z-500">
+    <div
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      (click)="isSuggestionsOpen = false"
+    ></div>
+    <div
+      class="absolute inset-y-0 right-0 w-[320px] md:w-95 glass-effect border-l border-white/10 p-8 shadow-2xl"
+    >
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-xl font-black uppercase text-(--text-main)">Suggestions</h3>
+        <button (click)="isSuggestionsOpen = false" class="text-red-500">
+          <i class="fa-solid fa-circle-xmark text-2xl"></i>
+        </button>
+      </div>
+      <div class="overflow-y-auto h-full pb-20">
+        <app-suggestions-card [users]="suggestions"></app-suggestions-card>
+      </div>
+    </div>
+  </div>
+}

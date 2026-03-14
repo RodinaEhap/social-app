@@ -1,0 +1,275 @@
+<div class="min-h-screen flex items-center justify-center relative overflow-hidden p-6">
+  <div
+    class="absolute top-0 -left-10 w-125 h-125 bg-brand-primary/15 rounded-full blur-[120px] animate-blob"
+  ></div>
+  <div
+    class="absolute bottom-0 -right-10 w-125 h-125 bg-indigo-500/15 rounded-full blur-[120px] animate-blob animation-delay-2000"
+  ></div>
+
+  <div class="relative z-10 w-full max-w-110">
+    <div
+      class="glass-effect border border-white/60 rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-3xl bg-white/70"
+    >
+      <div class="text-center mb-8">
+        <h2
+          class="text-4xl font-[1000] bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text text-transparent mb-2 tracking-tight"
+        >
+          Create Account
+        </h2>
+        <p class="text-zinc-500 text-sm font-semibold tracking-wide">
+          Start your journey with
+          <span
+            class="text-[15px] bg-linear-to-r from-indigo-700 to-brand-primary bg-clip-text text-transparent tracking-tight font-black"
+            >Social Vibe</span
+          >
+        </p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="signUPSubmit()" class="space-y-4">
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-user text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="name"
+              type="text"
+              id="name"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('name')?.invalid && registerForm.get('name')?.touched,
+                'border-green-500':
+                  registerForm.get('name')?.valid && registerForm.get('name')?.touched,
+                'border-gray-300': !registerForm.get('name')?.touched,
+              }"
+            />
+            <label
+              for="name"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Full Name
+            </label>
+          </div>
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">
+              Name is required (min 3 chars)
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-at text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="username"
+              type="text"
+              id="username"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('username')?.invalid && registerForm.get('username')?.touched,
+
+                'border-green-500':
+                  registerForm.get('username')?.valid && registerForm.get('username')?.touched,
+
+                'border-gray-300': !registerForm.get('username')?.touched,
+              }"
+            />
+            <label
+              for="username"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Username
+            </label>
+          </div>
+          @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">
+              Please enter a valid username
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-envelope text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="email"
+              type="email"
+              id="email"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('email')?.invalid && registerForm.get('email')?.touched,
+                'border-green-500':
+                  registerForm.get('email')?.valid && registerForm.get('email')?.touched,
+                'border-gray-300': !registerForm.get('email')?.touched,
+              }"
+            />
+            <label
+              for="email"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Email Address
+            </label>
+          </div>
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">Enter a valid email address</div>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="">
+            <input
+              formControlName="dateOfBirth"
+              type="date"
+              class="block px-4 py-3 w-full text-sm font-bold text-gray-500 bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('dateOfBirth')?.invalid &&
+                  registerForm.get('dateOfBirth')?.touched,
+                'border-green-500':
+                  registerForm.get('dateOfBirth')?.valid &&
+                  registerForm.get('dateOfBirth')?.touched,
+                'border-gray-300': !registerForm.get('dateOfBirth')?.touched,
+              }"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <select
+              formControlName="gender"
+              id="gender"
+              class="block px-4 py-3 w-full text-sm font-bold text-gray-500 bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer cursor-pointer transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched,
+                'border-green-500':
+                  registerForm.get('gender')?.valid && registerForm.get('gender')?.touched,
+                'border-gray-300': !registerForm.get('gender')?.touched,
+              }"
+            >
+              <option value="" disabled selected>Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-lock text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="password"
+              type="password"
+              id="password"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('password')?.invalid && registerForm.get('password')?.touched,
+
+                'border-green-500':
+                  registerForm.get('password')?.valid && registerForm.get('password')?.touched,
+                'border-gray-300': !registerForm.get('password')?.touched,
+              }"
+            />
+            <label
+              for="password"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Password
+            </label>
+          </div>
+          @if (registerForm.get('password')?.errors && registerForm.get('password')?.touched) {
+            <div class="text-2xs font-bold text-red-600 mt-1">
+              @if (registerForm.get('password')?.hasError('required')) {
+                <span>Required!</span>
+              } @else if (registerForm.get('password')?.hasError('pattern')) {
+                <div class="mt-2 p-3 bg-red-50 rounded-md">
+                  <p class="text-[11px] font-bold text-red-700 mb-1">Password must include:</p>
+                  <ul class="text-2xs text-red-600 space-y-1 ps-3 list-disc font-semibold">
+                    <li>At least 8 characters long</li>
+                    <li>At least one Uppercase letter (A-Z)</li>
+                    <li>At least one Lowercase letter (a-z)</li>
+                    <li>At least one Number (0-9)</li>
+                    <li>At least one Special character (@, #, $, etc.)</li>
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="flex flex-col w-full">
+          <div class="relative group">
+            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-4 pointer-events-none">
+              <i
+                class="fa-solid fa-lock text-xs text-zinc-400 transition-colors group-focus-within:text-brand-primary"
+              ></i>
+            </div>
+            <input
+              formControlName="rePassword"
+              type="password"
+              id="repassword"
+              placeholder=" "
+              class="block ps-11 pe-2.5 pb-2.5 pt-4 w-full text-base font-bold bg-transparent rounded-xl border appearance-none focus:outline-none focus:ring-0 peer bg-linear-to-r from-indigo-600 to-brand-primary bg-clip-text [-webkit-text-fill-color:transparent] transition-all duration-300"
+              [ngClass]="{
+                'border-red-500':
+                  registerForm.get('rePassword')?.touched &&
+                  (registerForm.get('rePassword')?.invalid || registerForm.hasError('mismatch')),
+                'border-green-500':
+                  registerForm.get('rePassword')?.valid &&
+                  registerForm.get('rePassword')?.touched &&
+                  !registerForm.hasError('mismatch'),
+                'border-gray-300': !registerForm.get('rePassword')?.touched,
+              }"
+            />
+            <label
+              for="repassword"
+              class="absolute text-sm font-bold text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 bg-white/0 peer-focus:bg-white peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 inset-s-10"
+            >
+              Confirm Password
+            </label>
+          </div>
+          @if (registerForm.get('rePassword')?.touched && registerForm.hasError('mismatch')) {
+            <div class="text-2xs font-bold text-red-500 mt-1 ps-4">Passwords must match</div>
+          }
+        </div>
+
+        <button
+          [disabled]="registerForm.invalid"
+          class="w-full py-4 mt-2 rounded-xl font-black uppercase text-xs tracking-[0.25em] transition-all duration-300 bg-linear-to-r from-indigo-600 to-brand-primary text-white shadow-xl shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:scale-[1.01] active:scale-[0.99] disabled:from-zinc-400 disabled:to-zinc-500 disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-60 disabled:scale-100"
+        >
+          Create Account
+        </button>
+
+        <div class="text-center pt-2">
+          <p class="text-zinc-500 text-[11px] font-bold uppercase">
+            Already a member?
+            <a
+              routerLink="/auth/login"
+              class="text-brand-primary font-black hover:text-indigo-600 transition-colors ml-1 tracking-wider border-b-2 border-brand-primary/10"
+              >LOG IN</a
+            >
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

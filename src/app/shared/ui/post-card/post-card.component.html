@@ -1,0 +1,217 @@
+<div
+  class="glass-effect rounded-3xl p-6 mb-6 transition-all duration-300 group shadow-lg border border-white/5 relative"
+>
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3 cursor-pointer" (click)="goToProfile(post.user._id)">
+      <img
+        [src]="post.user.photo"
+        class="w-10 h-10 rounded-full object-cover border border-brand-primary/20"
+      />
+      <div>
+        <div class="flex items-center gap-2">
+          <h4 class="font-bold text-sm text-(--text-main)">{{ post.user.name }}</h4>
+
+          @if (post.user._id !== myId) {
+            <button
+              (click)="handleFollow(post.user._id); $event.stopPropagation()"
+              class="text-xs text-brand-primary font-bold cursor-pointer hover:text-2xs"
+              [class.text-brand-primary]="!post.user?.following"
+              [class.text-zinc-500]="post.user?.following"
+            >
+              {{ post.user?.following ? 'Unfollow' : 'Follow' }}
+            </button>
+          }
+        </div>
+        <p class="text-2xs opacity-40">
+          {{ post.createdAt | timeAgo }}
+        </p>
+      </div>
+    </div>
+
+    <div class="relative dropdown-container">
+      <button
+        (click)="isMenuOpen = !isMenuOpen"
+        class="p-2 hover:bg-white/5 rounded-full transition-all"
+      >
+        <i class="fa-solid fa-ellipsis-vertical opacity-50"></i>
+      </button>
+
+      @if (isMenuOpen) {
+        <div
+          class="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl py-2 z-50 overflow-hidden animate-in fade-in zoom-in duration-200"
+        >
+          @if (post.user._id === myId) {
+            <button
+              (click)="openEditModal()"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-blue-400 hover:bg-white/5 transition-all"
+            >
+              <i class="fa-solid fa-pen-to-square"></i> Edit Vibe
+            </button>
+
+            <button
+              (click)="onDelete()"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-white/5 transition-all"
+            >
+              <i class="fa-solid fa-trash-can"></i> Delete Vibe
+            </button>
+          } @else {
+            <button
+              (click)="goToProfile(post.user._id)"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-white hover:bg-white/5 transition-all border-t border-white/5 mt-1"
+            >
+              <i class="fa-solid fa-circle-user"></i> View Profile
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="space-y-4 mb-5">
+    <p class="text-[15px] leading-relaxed text-(--text-main)">{{ post.body }}</p>
+
+    @if (post.image || post.video) {
+      <div
+        class="rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center min-h-50"
+      >
+        @if (post.image) {
+          <img
+            [src]="post.image"
+            class="w-full h-auto max-h-125 object-contain hover:scale-[1.01] transition-transform duration-500"
+          />
+        } @else if (post.video) {
+          <video [src]="post.video" controls class="w-full max-h-125"></video>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="flex items-center justify-between pt-4 border-t border-white/10">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2">
+        <button
+          (click)="onLike()"
+          class="transition-all hover:scale-125 active:scale-90"
+          [class.text-red-500]="post.liked"
+        >
+          <i [class]="post.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+        </button>
+        <button
+          (click)="openLikersModal(post._id)"
+          class="text-[13px] font-bold text-(--text-main) hover:underline transition-all"
+        >
+          Like ({{ post.likesCount }})
+        </button>
+      </div>
+
+      <button
+        (click)="showComments = !showComments"
+        class="flex items-center gap-2 text-[13px] font-bold transition-colors"
+        [class.text-brand-primary]="showComments"
+        [class.text-(--text-muted)]="!showComments"
+      >
+        <i [class]="showComments ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"></i>
+        <span>Comment</span>
+      </button>
+
+      <button
+        (click)="onShare()"
+        class="flex items-center gap-2 text-[13px] font-bold text-(--text-muted) hover:text-brand-primary transition-colors"
+      >
+        <i class="fa-solid fa-share-nodes"></i> <span class="hidden md:inline">Share</span>
+      </button>
+    </div>
+
+    <button
+      (click)="bookmarkClick(post._id)"
+      class="transition-all active:scale-75"
+      [class.text-brand-primary]="post.bookmarked"
+    >
+      <i
+        [class]="
+          post.bookmarked ? 'fa-solid fa-bookmark text-lg' : 'fa-regular fa-bookmark text-lg'
+        "
+      ></i>
+    </button>
+  </div>
+
+  @if (showComments) {
+    <app-comments [postId]="post._id"></app-comments>
+  }
+</div>
+
+@if (showEditModal) {
+  <div
+    class="fixed inset-0 z-1100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+  >
+    <div class="w-full max-w-lg border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
+      <h3 class="text-xl font-black text-white uppercase mb-6 tracking-tighter">
+        Update your Vibe
+      </h3>
+      <textarea
+        [(ngModel)]="editContent"
+        class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 ring-brand-primary outline-none resize-none mb-6 transition-all"
+        rows="5"
+        placeholder="What's on your mind?"
+      ></textarea>
+      <div class="flex gap-3">
+        <button
+          (click)="showEditModal = false"
+          class="flex-1 py-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="onUpdate()"
+          class="flex-1 py-4 bg-brand-primary text-white rounded-2xl font-bold hover:opacity-90 transition-opacity"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showLikersModal) {
+  <div
+    class="fixed inset-0 z-1100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-sm border border-white/10 rounded-4xl p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+        <h3 class="text-lg font-black text-white uppercase tracking-tighter">Liked by</h3>
+        <button
+          (click)="showLikersModal = false"
+          class="text-zinc-500 hover:text-red-500 transition-colors"
+        >
+          <i class="fa-solid fa-circle-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <div class="max-h-87.5 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+        @for (user of likers; track user._id) {
+          <div class="flex items-center justify-between group">
+            <div class="flex items-center gap-3">
+              <img
+                [src]="user.photo || 'https://ui-avatars.com/api/?name=' + user.name"
+                class="w-10 h-10 rounded-full object-cover border border-white/10"
+              />
+              <div>
+                <p
+                  class="text-sm font-bold text-white group-hover:text-brand-primary transition-colors"
+                >
+                  {{ user.name }}
+                </p>
+                <p class="text-2xs font-bold text-zinc-600 tracking-widest uppercase">
+                  {{ user.username || 'Viber' }}
+                </p>
+              </div>
+            </div>
+            <i class="fa-solid fa-heart text-red-500/20 text-xs"></i>
+          </div>
+        } @empty {
+          <p class="text-xs font-bold text-zinc-500 uppercase">No reactions</p>
+        }
+      </div>
+    </div>
+  </div>
+}

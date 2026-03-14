@@ -1,0 +1,29 @@
+<div class="min-h-screen w-full relative overflow-hidden transition-all duration-700">
+  <div class="fixed top-8 right-8 z-100">
+    <button
+      (click)="toggleTheme()"
+      class="group relative flex items-center w-18.5 h-8.5 p-1 rounded-full bg-white/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-white/10 shadow-lg backdrop-blur-md"
+    >
+      <div
+        class="z-10 w-7 h-7 rounded-full transition-all duration-500 flex items-center justify-center shadow-lg bg-brand-primary"
+        [class.translate-x-10]="isDarkMode"
+      >
+        <i
+          [class]="
+            isDarkMode
+              ? 'fa-solid fa-moon text-white text-2xs'
+              : 'fa-solid fa-sun text-white text-2xs'
+          "
+        ></i>
+      </div>
+      <div
+        class="absolute inset-0 flex justify-between items-center px-3 pointer-events-none text-zinc-400"
+      >
+        <i class="fa-solid fa-sun text-2xs"></i>
+        <i class="fa-solid fa-moon text-2xs"></i>
+      </div>
+    </button>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
