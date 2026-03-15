@@ -12,51 +12,56 @@
     </div>
     <button
       (click)="markAllAsRead()"
-      class="text-2xs font-bold text-brand-primary uppercase tracking-widest hover:underline transition-all"
+      class="text-2xs font-bold text-brand-primary uppercase hover:text-zinc-700 cursor-pointer"
+      [class.text-brand-primary]="unreadCount > 0"
+      [class.text-zinc-400]="unreadCount === 0"
+      [disabled]="unreadCount === 0"
     >
       Mark all as read
     </button>
   </div>
-
   <div class="space-y-3">
     @for (notif of notifications; track notif._id) {
       <div
         (click)="markAsRead(notif)"
-        class="glass-effect p-4 rounded-[1.8rem] md:rounded-4xl flex items-center justify-between group cursor-pointer hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 will-change-transform"
+        class="glass-effect p-4 rounded-[1.8rem] md:rounded-4xl flex items-center justify-between group cursor-pointer hover:scale-[1.01] transition-all"
         [class.opacity-60]="notif.isRead"
       >
         <div class="flex items-center gap-4 min-w-0">
-          <div class="relative shrink-0">
+          <div class="relative shrink-0" (click)="goToProfile(notif); $event.stopPropagation()">
             <img
-              [src]="notif.sender?.photo || 'assets/default-avatar.png'"
+              [src]="notif.actor?.photo || 'assets/default-avatar.png'"
               class="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover border border-white/10"
             />
             <div
-              class="absolute -bottom-1 -right-1 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border-2 border-[#0f0f0f]"
-              [ngClass]="notif.type === 'like' ? 'bg-red-500' : 'bg-brand-primary'"
+              class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0f0f0f]"
+              [ngClass]="notif.type.includes('like') ? 'bg-red-500' : 'bg-brand-primary'"
             >
               <i
-                [class]="notif.type === 'like' ? 'fa-solid fa-heart' : 'fa-solid fa-comment'"
-                class="text-[8px] md:text-2xs text-white"
+                [class]="notif.type.includes('like') ? 'fa-solid fa-heart' : 'fa-solid fa-comment'"
+                class="text-[8px] text-white"
               ></i>
             </div>
           </div>
-
           <div class="min-w-0">
             <p class="text-xs md:text-sm font-medium leading-snug text-main">
-              <span class="font-black">{{ notif.sender?.name }}</span> {{ notif.message }}
-              @if (notif.postContent) {
-                <span class="opacity-50 italic block md:inline truncate"
-                  >"{{ notif.postContent }}"</span
-                >
+              <span class="font-black">{{ notif.actor?.name }}</span>
+              {{
+                notif.type.includes('like')
+                  ? 'liked your vibe'
+                  : notif.type.includes('comment')
+                    ? 'commented on your vibe'
+                    : 'shared your post'
+              }}
+              @if (notif.entity?.body) {
+                <span class="opacity-50 italic block truncate">"{{ notif.entity.body }}"</span>
               }
             </p>
-            <span class="text-[9px] md:text-2xs font-bold opacity-40 uppercase tracking-tight">{{
+            <span class="text-[9px] font-bold opacity-40 uppercase">{{
               notif.createdAt | date: 'shortTime'
             }}</span>
           </div>
         </div>
-
         @if (!notif.isRead) {
           <div
             class="w-2.5 h-2.5 bg-brand-primary rounded-full shadow-[0_0_10px_rgba(11,4,138,0.5)] shrink-0 ml-3"
@@ -70,15 +75,14 @@
       </div>
     }
   </div>
-
   @if (hasMore && notifications.length > 0) {
     <div class="flex justify-center pt-6 pb-12">
       <button
         (click)="loadMore()"
         [disabled]="loading"
-        class="glass-effect px-10 py-3 rounded-2xl text-2xs font-black uppercase tracking-[0.2em] text-brand-primary hover:bg-brand-primary hover:text-white transition-all disabled:opacity-50"
+        class="glass-effect px-10 py-3 rounded-2xl text-2xs font-black uppercase text-brand-primary hover:bg-brand-primary hover:text-white transition-all disabled:opacity-50"
       >
-        {{ loading ? 'Loading Vibes...' : 'Load More' }}
+        {{ loading ? 'Loading...' : 'Load More' }}
       </button>
     </div>
   }

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationsService } from '../../core/auth/services/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-notifications',
@@ -10,18 +11,16 @@ import { NotificationsService } from '../../core/auth/services/notification.serv
   styleUrls: ['./notifications.component.css'],
 })
 export class NotificationsComponent implements OnInit {
-  private readonly _notifService = inject(NotificationsService);
-
+  private readonly notificationsService = inject(NotificationsService);
+  private readonly router = inject(Router);
   notifications: any[] = [];
   unreadCount = 0;
   currentPage = 1;
   hasMore = true;
   loading = false;
-
   ngOnInit() {
     this.loadInitialData();
   }
-
   loadInitialData() {
     this.getUnreadCount();
     this.loadNotifications();
@@ -29,17 +28,13 @@ export class NotificationsComponent implements OnInit {
   loadNotifications() {
     if (this.loading) return;
     this.loading = true;
-
-    this._notifService.getNotifications(this.currentPage).subscribe({
+    this.notificationsService.getNotifications(this.currentPage).subscribe({
       next: (res) => {
         console.log('Response:', res);
-
         const newNotifs = res?.data?.notifications || [];
-
         if (newNotifs.length < 10) {
           this.hasMore = false;
         }
-
         this.notifications = [...this.notifications, ...newNotifs];
         this.loading = false;
       },
@@ -49,38 +44,38 @@ export class NotificationsComponent implements OnInit {
       },
     });
   }
-
   getUnreadCount() {
-    this._notifService.getUnreadCount().subscribe({
+    this.notificationsService.getUnreadCount().subscribe({
       next: (res) => {
-        this.unreadCount = res.data?.unreadCount || res.unreadCount || 0;
+        this.unreadCount = res.data?.unreadCount || 0;
       },
     });
   }
-
   markAsRead(notif: any) {
     if (notif.isRead) return;
-    this._notifService.markAsRead(notif._id).subscribe({
+    this.notificationsService.markAsRead(notif._id).subscribe({
       next: () => {
         notif.isRead = true;
         if (this.unreadCount > 0) this.unreadCount--;
       },
     });
   }
-
   markAllAsRead() {
-    this._notifService.markAllAsRead().subscribe({
+    this.notificationsService.markAllAsRead().subscribe({
       next: () => {
         this.notifications.forEach((n) => (n.isRead = true));
         this.unreadCount = 0;
       },
     });
   }
-
   loadMore() {
     if (this.hasMore) {
       this.currentPage++;
       this.loadNotifications();
     }
+  }
+  goToProfile(notif: any) {
+    this.markAsRead(notif);
+    this.router.navigate(['/profile', notif.actor?._id]);
   }
 }
