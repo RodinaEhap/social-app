@@ -68,10 +68,9 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userPhoto');
-    localStorage.removeItem('userId');
+    localStorage.clear();
     this.userPhoto.next('');
+    this.userId = '';
     this.router.navigate(['/auth/login']);
   }
 }

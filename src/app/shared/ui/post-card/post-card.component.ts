@@ -43,11 +43,15 @@ export class PostCardComponent implements OnInit {
   showComments = false;
   showMore = false;
   shareComment: string = '';
+  likedKey = '';
+  followKey = '';
 
   ngOnInit() {
     this.myId = localStorage.getItem('userId') || this.authService.userId;
-    let followedUsers = JSON.parse(localStorage.getItem('followedUsers') || '[]');
-    if (followedUsers.includes(this.post.user._id)) {
+    this.likedKey = `myLikedPosts-FOR-${this.myId}`;
+    this.followKey = `followedUsers-FOR-${this.myId}`;
+    let followedUsers = JSON.parse(localStorage.getItem(this.followKey) || '[]');
+    if (this.post?.user?._id && followedUsers.includes(this.post.user._id)) {
       this.post.user.following = true;
     }
   }
@@ -65,21 +69,23 @@ export class PostCardComponent implements OnInit {
     const previousCount = this.post.likesCount;
     this.post.liked = !this.post.liked;
     this.post.likesCount += this.post.liked ? 1 : -1;
-
     this.postsServiceService.toggleLike(this.post._id).subscribe({
       next: (res: any) => {
+        console.log(res);
         if (res.message === 'success') {
-          let likedPosts = JSON.parse(localStorage.getItem('myLikedPosts') || '[]');
+          this.post.liked = res.data.liked;
+          this.post.likesCount = res.data.likesCount;
+          let likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
           if (this.post.liked) {
             const isExist = likedPosts.some((p: any) => p._id === this.post._id);
-            if (isExist) {
+            if (!isExist) {
               likedPosts.push(this.post);
               this.toastr.success('Vibe Liked!');
             }
           } else {
             likedPosts = likedPosts.filter((p: any) => p._id !== this.post._id);
           }
-          localStorage.setItem('myLikedPosts', JSON.stringify(likedPosts));
+          localStorage.setItem(this.likedKey, JSON.stringify(likedPosts));
           this.likeTriggered.emit(this.post._id);
         }
       },
@@ -163,9 +169,9 @@ export class PostCardComponent implements OnInit {
         this.postsServiceService.deletePost(this.post._id).subscribe({
           next: () => {
             this.postDeleted.emit(this.post._id);
-            let likedPosts = JSON.parse(localStorage.getItem('myLikedPosts') || '[]');
+            let likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
             likedPosts = likedPosts.filter((p: any) => p._id !== this.post._id);
-            localStorage.setItem('myLikedPosts', JSON.stringify(likedPosts));
+            localStorage.setItem(this.likedKey, JSON.stringify(likedPosts));
             this.postsServiceService.notifyRefresh();
             this.toastr.success('Vibe Deleted successfully', 'Deleted');
           },
@@ -202,13 +208,13 @@ export class PostCardComponent implements OnInit {
       next: (res: any) => {
         console.log(res);
         this.post.user = { ...this.post.user, following: res.data.following };
-        let followedUsers = JSON.parse(localStorage.getItem('followedUsers') || '[]');
+        let followedUsers = JSON.parse(localStorage.getItem(this.followKey) || '[]');
         if (res.data.following) {
           followedUsers.push(userId);
         } else {
           followedUsers = followedUsers.filter((id: string) => id !== userId);
         }
-        localStorage.setItem('followedUsers', JSON.stringify(followedUsers));
+        localStorage.setItem(this.followKey, JSON.stringify(followedUsers));
         this.isMenuOpen = false;
         const message = res.data.following
           ? this.toastr.info(`You are now following ${this.post.user.name}`)

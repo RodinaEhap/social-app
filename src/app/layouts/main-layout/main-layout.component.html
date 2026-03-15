@@ -155,16 +155,16 @@
           </a>
           <a
             [routerLink]="['/main/feed']"
-            [queryParams]="{ tab: 'likes' }"
+            [queryParams]="{ tab: 'following' }"
             (click)="isMobileMenuOpen = false"
             class="flex flex-col items-center gap-2 p-4 rounded-2xl hover:bg-brand-primary/5 text-(--text-main)"
           >
             <div
-              class="w-10 h-10 rounded-full bg-pink-500/20 text-pink-500 flex items-center justify-center"
+              class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center"
             >
-              <i class="fa-solid fa-heart"></i>
+              <i class="fa-solid fa-user-check"></i>
             </div>
-            <span class="text-2xs font-bold uppercase">Likes</span>
+            <span class="text-2xs font-bold uppercase">Following</span>
           </a>
           <button
             (click)="isSuggestionsOpen = true; isMobileMenuOpen = false"
