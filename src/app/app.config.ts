@@ -45,7 +45,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
-        prefix: './assets/i18n/',
+        prefix: '/assets/i18n/',
         suffix: '.json',
       }),
       fallbackLang: 'en',
