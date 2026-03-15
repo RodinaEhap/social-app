@@ -41,6 +41,7 @@ export class PostCardComponent implements OnInit {
   showEditModal = false;
   editContent: string = '';
   showComments = false;
+  showMore = false;
 
   ngOnInit() {
     this.myId = localStorage.getItem('userId') || this.authService.userId;

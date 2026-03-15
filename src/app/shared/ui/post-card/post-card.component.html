@@ -72,16 +72,14 @@
       class="text-[15px] leading-relaxed text-(--text-main) wrap-break-word"
       style="overflow-wrap: anywhere"
     >
-      {{
-        post.body.length > 100 && !post.showMore ? (post.body | slice: 0 : 100) + '...' : post.body
-      }}
+      {{ post.body.length > 100 && !showMore ? (post.body | slice: 0 : 100) + '...' : post.body }}
 
       @if (post.body.length > 100) {
         <button
-          (click)="post.showMore = !post.showMore"
+          (click)="showMore = !showMore"
           class="text-brand-primary font-bold text-xs ml-1 hover:underline cursor-pointer"
         >
-          {{ post.showMore ? 'Show Less' : 'See More' }}
+          {{ showMore ? 'Show Less' : 'See More' }}
         </button>
       }
     </p>
