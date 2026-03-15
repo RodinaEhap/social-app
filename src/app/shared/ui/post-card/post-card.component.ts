@@ -69,8 +69,11 @@ export class PostCardComponent implements OnInit {
         if (res.message === 'success') {
           let likedPosts = JSON.parse(localStorage.getItem('myLikedPosts') || '[]');
           if (this.post.liked) {
-            likedPosts.push(this.post);
-            this.toastr.success('Vibe Liked!');
+            const isExist = likedPosts.some((p: any) => p._id === this.post._id);
+            if (isExist) {
+              likedPosts.push(this.post);
+              this.toastr.success('Vibe Liked!');
+            }
           } else {
             likedPosts = likedPosts.filter((p: any) => p._id !== this.post._id);
           }

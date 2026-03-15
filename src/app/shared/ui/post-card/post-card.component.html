@@ -68,7 +68,23 @@
   </div>
 
   <div class="space-y-4 mb-5">
-    <p class="text-[15px] leading-relaxed text-(--text-main)">{{ post.body }}</p>
+    <p
+      class="text-[15px] leading-relaxed text-(--text-main) wrap-break-word"
+      style="overflow-wrap: anywhere"
+    >
+      {{
+        post.body.length > 100 && !post.showMore ? (post.body | slice: 0 : 100) + '...' : post.body
+      }}
+
+      @if (post.body.length > 100) {
+        <button
+          (click)="post.showMore = !post.showMore"
+          class="text-brand-primary font-bold text-xs ml-1 hover:underline cursor-pointer"
+        >
+          {{ post.showMore ? 'Show Less' : 'See More' }}
+        </button>
+      }
+    </p>
 
     @if (post.image || post.video) {
       <div
@@ -80,7 +96,7 @@
             class="w-full h-auto max-h-125 object-contain hover:scale-[1.01] transition-transform duration-500"
           />
         } @else if (post.video) {
-          <video [src]="post.video" controls class="w-full max-h-125"></video>
+          <video [src]="post.video" controls muted playsinline class="w-full max-h-125"></video>
         }
       </div>
     }

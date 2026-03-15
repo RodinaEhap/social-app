@@ -31,9 +31,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(
       withFetch(),
-      withInterceptors([errorsInterceptor]),
-      withInterceptors([headerInterceptor]),
-      withInterceptors([loadingInterceptor]),
+      withInterceptors([errorsInterceptor, loadingInterceptor, headerInterceptor]),
     ),
 
     provideToastr({
@@ -45,10 +43,9 @@ export const appConfig: ApplicationConfig = {
       newestOnTop: true,
     }),
     provideAnimationsAsync(),
-    provideHttpClient(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
-        prefix: '/assets/i18n/',
+        prefix: './assets/i18n/',
         suffix: '.json',
       }),
       fallbackLang: 'en',
