@@ -42,6 +42,7 @@ export class PostCardComponent implements OnInit {
   editContent: string = '';
   showComments = false;
   showMore = false;
+  shareComment: string = '';
 
   ngOnInit() {
     this.myId = localStorage.getItem('userId') || this.authService.userId;
@@ -104,17 +105,33 @@ export class PostCardComponent implements OnInit {
   }
 
   onShare() {
-    const shareData = new FormData();
-    shareData.append('body', this.post.body);
-    this.postsServiceService.postCreation(shareData).subscribe({
-      next: (res) => {
-        this.toastr.success('Vibe Shared on your feed!');
-        this.postsServiceService.notifyRefresh();
+    Swal.fire({
+      title: 'Share Vibe',
+      input: 'textarea',
+      inputPlaceholder: 'Write something about this vibe...',
+      showCancelButton: true,
+      confirmButtonText: 'Share Now',
+      confirmButtonColor: '#0b048a',
+      background: 'rgba(255, 255, 255, 0.8)',
+      color: '#0b048a',
+      inputAttributes: {
+        style: 'background: ; color:#0b048a ; border-radius: 20px;',
       },
-      error: (err) => this.toastr.error('Sharing failed'),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const content = {
+          body: result.value || 'Shared a vibe',
+        };
+        this.postsServiceService.sharePost(this.post._id, content).subscribe({
+          next: (res) => {
+            this.toastr.success('Vibe Shared successfully!');
+            this.postsServiceService.notifyRefresh();
+          },
+          error: (err) => this.toastr.error('Sharing failed'),
+        });
+      }
     });
   }
-
   bookmarkClick(id: string) {
     const previousStatus = this.post.bookmarked;
     this.post.bookmarked = !this.post.bookmarked;
@@ -184,7 +201,7 @@ export class PostCardComponent implements OnInit {
     this.authService.toggleFollow(userId).subscribe({
       next: (res: any) => {
         console.log(res);
-        this.post.user.following = res.data.following;
+        this.post.user = { ...this.post.user, following: res.data.following };
         let followedUsers = JSON.parse(localStorage.getItem('followedUsers') || '[]');
         if (res.data.following) {
           followedUsers.push(userId);
