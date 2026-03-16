@@ -80,7 +80,7 @@ export class FeedComponent implements OnInit {
         },
       });
     } else if (tabName === 'likes') {
-      const savedLikes = localStorage.getItem('myLikedPosts');
+      const savedLikes = localStorage.getItem(this.authService.getLikedKey());
       this.allPosts = savedLikes ? JSON.parse(savedLikes) : [];
     }
   }

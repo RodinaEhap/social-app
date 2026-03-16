@@ -76,6 +76,6 @@ export class NotificationsComponent implements OnInit {
   }
   goToProfile(notif: any) {
     this.markAsRead(notif);
-    this.router.navigate(['/profile', notif.actor?._id]);
+    this.router.navigate(['/main/profile', notif.actor?._id]);
   }
 }

@@ -24,33 +24,39 @@ export class ProfileComponent implements OnInit {
   isMyProfile: boolean = false;
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe((params) => {
-      const userIdFromRoute = params.get('id');
-      const mySavedId = localStorage.getItem('userId');
-      if (!userIdFromRoute || userIdFromRoute === mySavedId) {
-        this.isMyProfile = true;
-        this.loadMyProfile();
-      } else {
-        this.isMyProfile = false;
-        this.loadUserProfile(userIdFromRoute);
+      this.loadProfile(params.get('id'), localStorage.getItem('userId'));
+    });
+
+    this.loadSuggestions();
+    this.authService.followStatus$.subscribe((status) => {
+      if (status && status.userId === this.userProfile?._id) {
+        this.userProfile.following = status.isFollowing;
+        status.isFollowing ? this.userProfile.followersCount++ : this.userProfile.followersCount--;
       }
     });
-    this.loadSuggestions();
   }
-  loadMyProfile() {
-    this.authService.getMyProfile().subscribe({
-      next: (res) => {
-        this.userProfile = res.data.user;
-        this.getUserPosts(this.userProfile._id);
-      },
-    });
+  loadProfile(routeId: string | null, myId: string | null) {
+    if (!routeId || routeId === myId) {
+      this.authService.getMyProfile().subscribe({
+        next: (res) => this.updateProfileData(res),
+        error: (err) => this.toastr.error('Failed to load your profile'),
+      });
+    } else {
+      this.authService.getUserProfile(routeId).subscribe({
+        next: (res) => this.updateProfileData(res),
+        error: (err) => this.toastr.error('Failed to load user profile'),
+      });
+    }
   }
-  loadUserProfile(id: string) {
-    this.authService.getUserProfile(id).subscribe({
-      next: (res) => {
-        this.userProfile = res.data.user;
-        this.getUserPosts(id);
-      },
-    });
+  updateProfileData(res: any) {
+    this.userProfile = res.data.user;
+    if (res.data.hasOwnProperty('isFollowing')) {
+      this.isMyProfile = false;
+      this.userProfile.following = res.data.isFollowing;
+    } else {
+      this.isMyProfile = true;
+    }
+    this.getUserPosts(this.userProfile._id);
   }
   getUserPosts(id: string) {
     this.postsService.getUserPosts(id).subscribe({
@@ -60,9 +66,14 @@ export class ProfileComponent implements OnInit {
     });
   }
   loadSuggestions() {
-    this.authService.getFollowSuggestions(7).subscribe({
+    this.authService.getFollowSuggestions(10).subscribe({
       next: (res) => {
         this.suggestedUsers = res.data.suggestions;
+      },
+      error: (err) => {
+        console.log(err);
+
+        this.toastr.error('Failed to load suggestions');
       },
     });
   }
@@ -78,20 +89,29 @@ export class ProfileComponent implements OnInit {
           localStorage.setItem('userPhoto', res.data.photo);
           this.toastr.success('Profile photo updated!', 'Success');
         },
+        error: (err) => {
+          console.log(err);
+          this.toastr.error('Failed to load image');
+        },
       });
     }
   }
   handleFollow(userId: string) {
     this.authService.toggleFollow(userId).subscribe({
       next: (res) => {
-        this.userProfile.following = !this.userProfile.following;
+        console.log(res);
+
+        this.userProfile.following = res.data.following;
         if (this.userProfile.following) {
           this.userProfile.followersCount++;
           this.toastr.success(`You are now following ${this.userProfile.name}`);
         } else {
-          this.userProfile.followersCount--;
+          if (res.data.followersCount >= 0) this.userProfile.followersCount--;
           this.toastr.info(`Unfollowed ${this.userProfile.name}`);
         }
+      },
+      error: (err) => {
+        this.toastr.error('Connection lost. Could not update follow status');
       },
     });
   }

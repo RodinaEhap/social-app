@@ -44,16 +44,17 @@ export class PostCardComponent implements OnInit {
   showMore = false;
   shareComment: string = '';
   likedKey = '';
-  followKey = '';
 
   ngOnInit() {
+    this.post.user.following = this.authService.myFollowingList.includes(this.post.user._id);
     this.myId = localStorage.getItem('userId') || this.authService.userId;
-    this.likedKey = `myLikedPosts-FOR-${this.myId}`;
-    this.followKey = `followedUsers-FOR-${this.myId}`;
-    let followedUsers = JSON.parse(localStorage.getItem(this.followKey) || '[]');
-    if (this.post?.user?._id && followedUsers.includes(this.post.user._id)) {
-      this.post.user.following = true;
-    }
+    this.likedKey = this.authService.getLikedKey();
+    const likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
+    this.authService.followStatus$.subscribe((status) => {
+      if (status && status.userId === this.post.user._id) {
+        this.post.user.following = status.isFollowing;
+      }
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -63,35 +64,34 @@ export class PostCardComponent implements OnInit {
       this.isMenuOpen = false;
     }
   }
-
+  private updateLikedStorage(postFromServer: any, shouldExist: boolean) {
+    let likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
+    if (shouldExist) {
+      const clickMoreOnLike = { ...postFromServer, liked: true };
+      const index = likedPosts.findIndex((p: any) => p._id === clickMoreOnLike._id);
+      //if found it means its index start from 0 we will update its data else <0 we will push
+      index > -1 ? (likedPosts[index] = clickMoreOnLike) : likedPosts.push(clickMoreOnLike);
+    } else {
+      //we will delete it
+      likedPosts = likedPosts.filter((p: any) => p._id !== postFromServer._id);
+    }
+    localStorage.setItem(this.likedKey, JSON.stringify(likedPosts));
+  }
   onLike() {
-    const previousLiked = this.post.liked;
-    const previousCount = this.post.likesCount;
-    this.post.liked = !this.post.liked;
-    this.post.likesCount += this.post.liked ? 1 : -1;
     this.postsServiceService.toggleLike(this.post._id).subscribe({
       next: (res: any) => {
         console.log(res);
         if (res.message === 'success') {
+          //ui
           this.post.liked = res.data.liked;
           this.post.likesCount = res.data.likesCount;
-          let likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
-          if (this.post.liked) {
-            const isExist = likedPosts.some((p: any) => p._id === this.post._id);
-            if (!isExist) {
-              likedPosts.push(this.post);
-              this.toastr.success('Vibe Liked!');
-            }
-          } else {
-            likedPosts = likedPosts.filter((p: any) => p._id !== this.post._id);
-          }
-          localStorage.setItem(this.likedKey, JSON.stringify(likedPosts));
+
+          this.updateLikedStorage(res.data.post, res.data.liked);
+          this.toastr.success(res.data.liked ? 'Vibe Liked!' : 'Vibe Unliked');
           this.likeTriggered.emit(this.post._id);
         }
       },
       error: (err) => {
-        this.post.liked = previousLiked;
-        this.post.likesCount = previousCount;
         this.toastr.error("Couldn't update like");
       },
     });
@@ -169,9 +169,7 @@ export class PostCardComponent implements OnInit {
         this.postsServiceService.deletePost(this.post._id).subscribe({
           next: () => {
             this.postDeleted.emit(this.post._id);
-            let likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
-            likedPosts = likedPosts.filter((p: any) => p._id !== this.post._id);
-            localStorage.setItem(this.likedKey, JSON.stringify(likedPosts));
+            this.updateLikedStorage(this.post, false);
             this.postsServiceService.notifyRefresh();
             this.toastr.success('Vibe Deleted successfully', 'Deleted');
           },
@@ -207,16 +205,9 @@ export class PostCardComponent implements OnInit {
     this.authService.toggleFollow(userId).subscribe({
       next: (res: any) => {
         console.log(res);
-        this.post.user = { ...this.post.user, following: res.data.following };
-        let followedUsers = JSON.parse(localStorage.getItem(this.followKey) || '[]');
-        if (res.data.following) {
-          followedUsers.push(userId);
-        } else {
-          followedUsers = followedUsers.filter((id: string) => id !== userId);
-        }
-        localStorage.setItem(this.followKey, JSON.stringify(followedUsers));
+
         this.isMenuOpen = false;
-        const message = res.data.following
+        res.data.following
           ? this.toastr.info(`You are now following ${this.post.user.name}`)
           : this.toastr.info(`Unfollowed ${this.post.user.name}`);
       },
@@ -224,5 +215,9 @@ export class PostCardComponent implements OnInit {
         this.toastr.error('Something went wrong', 'Follow Failed');
       },
     });
+  }
+  truncateText(text: string, limit: number = 100): string {
+    if (!text) return '';
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 }

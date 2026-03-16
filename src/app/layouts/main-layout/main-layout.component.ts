@@ -57,6 +57,7 @@ export class MainLayoutComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.authService.saveUserId();
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       this.isDarkMode = true;
