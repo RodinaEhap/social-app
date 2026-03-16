@@ -49,7 +49,10 @@ export class PostCardComponent implements OnInit {
     this.post.user.following = this.authService.myFollowingList.includes(this.post.user._id);
     this.myId = localStorage.getItem('userId') || this.authService.userId;
     this.likedKey = this.authService.getLikedKey();
-    const likedPosts = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
+    const savedLikes = JSON.parse(localStorage.getItem(this.likedKey) || '[]');
+    if (this.post.likes) {
+      this.post.liked = this.post.likes.some((liker: any) => liker === this.myId);
+    }
     this.authService.followStatus$.subscribe((status) => {
       if (status && status.userId === this.post.user._id) {
         this.post.user.following = status.isFollowing;
@@ -70,7 +73,7 @@ export class PostCardComponent implements OnInit {
       const clickMoreOnLike = { ...postFromServer, liked: true };
       const index = likedPosts.findIndex((p: any) => p._id === clickMoreOnLike._id);
       //if found it means its index start from 0 we will update its data else <0 we will push
-      index > -1 ? (likedPosts[index] = clickMoreOnLike) : likedPosts.push(clickMoreOnLike);
+      index > -1 ? (likedPosts[index] = clickMoreOnLike) : likedPosts.unshift(clickMoreOnLike);
     } else {
       //we will delete it
       likedPosts = likedPosts.filter((p: any) => p._id !== postFromServer._id);
@@ -86,7 +89,7 @@ export class PostCardComponent implements OnInit {
           this.post.liked = res.data.liked;
           this.post.likesCount = res.data.likesCount;
 
-          this.updateLikedStorage(res.data.post, res.data.liked);
+          this.updateLikedStorage(this.post, res.data.liked);
           this.toastr.success(res.data.liked ? 'Vibe Liked!' : 'Vibe Unliked');
           this.likeTriggered.emit(this.post._id);
         }
